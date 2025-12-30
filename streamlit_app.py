@@ -1,6 +1,7 @@
 # Import python packages
 import streamlit as st
 from snowflake.snowpark.functions import col
+import requests
 
 # Write directly to the app
 st.title(f":cup_with_straw: Customize Your Smoothie:cup_with_straw:")
@@ -47,5 +48,4 @@ values ('""" + ingredients_string + """','""" +name_on_order+ """')"""
         
         st.success(f'Your Smoothie is ordered, {name_on_order}!', icon="✅")
       
-import requests
 
