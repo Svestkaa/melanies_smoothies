@@ -28,34 +28,51 @@ ingredients_list = st.multiselect(
 
 if ingredients_list:
 
-    ingredients_string = " ".join(ingredients_list)
+    ingredients_string = ""
 
-    # --- Smoothiefroot API section ---
-    response = requests.get(
-        "https://my.smoothiefroot.com/api/fruit/watermelon",
-        timeout=5
-    )
+    for fruit_chosen in ingredients_list:
+        ingredients_string += fruit_chosen + " "
 
-    data = response.json()
+        st.subheader(fruit_chosen + " Nutrition Information")
 
-    nutrition_df = (
-        pd.DataFrame.from_dict(
-            data["nutrition"],
-            orient="index",
-            columns=["nutrition"]
+        response = requests.get(
+            f"https://my.smoothiefroot.com/api/fruit/{fruit_chosen.lower()}",
+            timeout=5
         )
-        .reset_index()
-        .rename(columns={"index": "nutrient"})
-    )
 
-    for col in ["family", "genus", "id", "name", "order"]:
-        nutrition_df[col] = data[col]
+        data = response.json()
 
-    nutrition_df = nutrition_df[
-        ["family", "genus", "id", "name", "nutrition", "order"]
-    ]
+        # --- Error case: fruit not in database ---
+        if "error" in data:
+            st.dataframe(
+                pd.DataFrame(
+                    {"value": [data["error"]]},
+                    index=["error"]
+                ),
+                use_container_width=True
+            )
+            continue
 
-    st.dataframe(nutrition_df, use_container_width=True)
+        # --- Normal case: nutrition breakdown ---
+        nutrition_df = (
+            pd.DataFrame.from_dict(
+                data["nutrition"],
+                orient="index",
+                columns=["nutrition"]
+            )
+            .reset_index()
+            .rename(columns={"index": "nutrient"})
+        )
+
+        for col in ["family", "genus", "id", "name", "order"]:
+            nutrition_df[col] = data[col]
+
+        nutrition_df = nutrition_df[
+            ["family", "genus", "id", "name", "nutrition", "order"]
+        ]
+
+        st.dataframe(nutrition_df, use_container_width=True)
+
 
     #st.write (ingredients_string)
 
