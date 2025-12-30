@@ -36,9 +36,10 @@ if ingredients_list:
         st.subheader(fruit_chosen + " Nutrition Information")
 
         response = requests.get(
-            f"https://my.smoothiefroot.com/api/fruit/{fruit_chosen.lower()}",
+            f"https://my.smoothiefroot.com/api/fruit/{fruit_chosen.lower().replace(' ', '')}",
             timeout=5
         )
+
 
         data = response.json()
 
@@ -81,8 +82,6 @@ values ('""" + ingredients_string + """','""" +name_on_order+ """')"""
 
 
     #st.write(my_insert_stmt)
- 
-    
     time_to_insert = st.button('Submit Order')
 
     if time_to_insert:
